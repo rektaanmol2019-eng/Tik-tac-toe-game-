@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- UTF-8 encoding and responsive viewport -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tic-Tac-Toe Deluxe</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <h1>Tic-Tac-Toe</h1>
+
+    <!-- HOME (Setup) -->
+    <section id="setup" class="setup" aria-label="Home">
+      <!-- Versus banner -->
+      <div class="vs-banner">
+        <div class="vs-card">
+          <div class="avatar x">X</div>
+          <div class="vs-name" id="bannerP1">Player 1</div>
+        </div>
+        <div class="vs-vs">VS</div>
+        <div class="vs-card">
+          <div class="avatar o">O</div>
+          <div class="vs-name" id="bannerP2">Player 2</div>
+        </div>
+      </div>
+
+      <!-- Basic settings -->
+      <div class="row">
+        <div class="field">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect" aria-label="Select game mode">
+            <option value="pvp" selected>Two Players</option>
+            <option value="cpu">Vs CPU</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="targetWins">First to (wins)</label>
+          <select id="targetWins" aria-label="Select target wins">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="p1Name">Player 1 name</label>
+          <input id="p1Name" type="text" maxlength="24" placeholder="Player 1" value="Player 1" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="p2Name">Player 2 name</label>
+          <input id="p2Name" type="text" maxlength="24" placeholder="Player 2" value="Player 2" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="row">
+        <fieldset class="field">
+          <legend>Player 1 mark</legend>
+          <label class="radio"><input type="radio" name="p1Mark" value="X" checked /> X</label>
+          <label class="radio"><input type="radio" name="p1Mark" value="O" /> O</label>
+        </fieldset>
+
+        <div class="field">
+          <label for="cpuLevel">CPU difficulty</label>
+          <select id="cpuLevel" aria-label="Select CPU difficulty">
+            <option value="1">Level 1 (easy)</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6" selected>Level 6 (strongest)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="align-self:end; display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="startMatch" class="primary" type="button">Start Match</button>
+          <button id="clearSaved" class="ghost" type="button">Clear Saved</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="gameRoot" hidden aria-label="Game">
+      <!-- Scoreboard -->
+      <section id="score" class="score" aria-label="Scoreboard">
+        <div class="score-row">
+          <div class="score-card">
+            <div id="p1Label" class="score-name">Player 1 (X)</div>
+            <div class="score-points"><span id="p1Wins">0</span></div>
+          </div>
+          <div class="score-target">First to <span id="targetLabel">3</span> wins</div>
+          <div class="score-card">
+            <div id="p2Label" class="score-name">Player 2 (O)</div>
+            <div class="score-points"><span id="p2Wins">0</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status and result (live regions) -->
+      <p id="turn" class="info" role="status" aria-live="polite">Turn: —</p>
+      <p id="result" class="result" role="status" aria-live="polite"></p>
+
+      <!-- 3x3 board (accessible buttons) -->
+      <section id="board" class="board" role="grid" aria-label="Tic-Tac-Toe board" aria-disabled="true">
+        <button class="cell" data-index="0" role="gridcell" aria-label="Row 1, Column 1 empty"></button>
+        <button class="cell" data-index="1" role="gridcell" aria-label="Row 1, Column 2 empty"></button>
+        <button class="cell" data-index="2" role="gridcell" aria-label="Row 1, Column 3 empty"></button>
+
+        <button class="cell" data-index="3" role="gridcell" aria-label="Row 2, Column 1 empty"></button>
+        <button class="cell" data-index="4" role="gridcell" aria-label="Row 2, Column 2 empty"></button>
+        <button class="cell" data-index="5" role="gridcell" aria-label="Row 2, Column 3 empty"></button>
+
+        <button class="cell" data-index="6" role="gridcell" aria-label="Row 3, Column 1 empty"></button>
+        <button class="cell" data-index="7" role="gridcell" aria-label="Row 3, Column 2 empty"></button>
+        <button class="cell" data-index="8" role="gridcell" aria-label="Row 3, Column 3 empty"></button>
+      </section>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button id="nextRound" class="ghost" type="button" hidden>Next Round</button>
+        <button id="newMatch" class="ghost" type="button" hidden>New Match</button>
+        <button id="resetRound" class="reset" type="button" hidden>Reset Round</button>
+        <button id="quitMatch" class="ghost" type="button">Quit Match</button>
+      </div>
+    </section>
+
+    <!-- MATCH SUMMARY -->
+    <section id="matchSummary" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="sumTitle" hidden>
+      <div class="modal-card">
+        <h2 id="sumTitle" class="sum-title"><span class="trophy" aria-hidden="true">🏆</span> Match Summary</h2>
+
+        <div class="modal-body">
+          <p id="sumWinner" class="sum-winner"></p>
+          <p id="sumFinal" class="sum-final"></p>
+
+          <div class="sum-scores">
+            <div class="score-card sum-card">
+              <div id="sumP1Name" class="score-name">Player 1</div>
+              <div class="score-points">Wins: <span id="sumP1Wins">0</span></div>
+              <div class="sum-mark">Mark: <span id="sumP1Mark">X</span></div>
+            </div>
+            <div class="score-card sum-card">
+              <div id="sumP2Name" class="score-name">Player 2</div>
+              <div class="score-points">Wins: <span id="sumP2Wins">0</span></div>
+              <div class="sum-mark">Mark: <span id="sumP2Mark">O</span></div>
+            </div>
+          </div>
+
+          <div class="sum-stats">
+            <div class="sum-stat">Ties: <span id="sumTies">0</span></div>
+            <div class="sum-stat">Player 1 losses: <span id="sumP1Losses">0</span></div>
+            <div class="sum-stat">Player 2 losses: <span id="sumP2Losses">0</span></div>
+          </div>
+
+          <div class="sum-timeline-wrap">
+            <div class="sum-timeline-label">Round results</div>
+            <div id="sumTimeline" class="sum-timeline" aria-label="Round results timeline"></div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="summaryRematch" class="primary" type="button">Rematch</button>
+          <button id="summaryNewMatch" class="ghost" type="button">New Match</button>
+          <button id="summaryCopy" class="ghost" type="button">Copy Summary</button>
+          <button id="summaryClose" class="ghost" type="button" aria-label="Close summary">Close</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logic -->
+    <script src="script.js"></script>
+  </main>
+</body>
+</html>
